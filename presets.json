@@ -1,0 +1,36 @@
+{
+  "TEKTIP": {
+    "mode": "window",
+    "detection_mode": "metin_preset",
+    "input_method": "postmessage",
+    "template_folder": "C:\\Users\\bagim\\OneDrive\\Masaüstü\\TritonXBotGuncelGui\\templates",
+    "monitor_index": 1,
+    "threshold": 0.8,
+    "scan_minutes": 0.25,
+    "click_minutes": 0.25,
+    "camera_seconds": 0.3,
+    "auto_loot_mode": "active",
+    "auto_loot_minutes": 0.01,
+    "color_hex": "#ffffff",
+    "color_tolerance": 20,
+    "captcha_enabled": true,
+    "captcha_check_interval": 300
+  },
+  "YEDEK": {
+    "mode": "window",
+    "detection_mode": "metin_preset",
+    "input_method": "postmessage",
+    "template_folder": "C:\\Users\\bagim\\OneDrive\\Masaüstü\\TritonXBotGuncelGui\\templates",
+    "monitor_index": 1,
+    "threshold": 0.8,
+    "scan_minutes": 0.2,
+    "click_minutes": 0.2,
+    "camera_seconds": 0.3,
+    "auto_loot_mode": "active",
+    "auto_loot_minutes": 0.01,
+    "color_hex": "#253e4b",
+    "color_tolerance": 20,
+    "captcha_enabled": true,
+    "captcha_check_interval": 300
+  }
+}

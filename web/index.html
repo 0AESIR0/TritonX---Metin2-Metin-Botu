@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TritonX - Auto Bot</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <div id="fallback" class="fallback-wrap hidden">
+      <div class="fallback-card">
+        <div class="fallback-title">Arayüz yüklenmedi</div>
+        <div id="fallback-msg" class="small" style="margin-top:8px"></div>
+        <pre id="fallback-detail" class="fallback-pre" style="margin-top:10px"></pre>
+        <div class="small" style="margin-top:10px">
+          İpucu: React CDN engelliyse (internet yok / kurumsal blok / DNS), bu ekran boş kalıyordu.
+          Artık hata burada görünecek.
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        const fallback = document.getElementById('fallback');
+        const msgEl = document.getElementById('fallback-msg');
+        const detailEl = document.getElementById('fallback-detail');
+
+        function showFallback(message, detail) {
+          try {
+            if (msgEl) msgEl.textContent = message || 'Bilinmeyen hata.';
+            if (detailEl) detailEl.textContent = detail || '';
+            if (fallback) fallback.classList.remove('hidden');
+          } catch (_) {
+            // ignore
+          }
+        }
+
+        window.addEventListener('error', function (ev) {
+          const m = ev && ev.message ? String(ev.message) : 'Script hatası.';
+          const src = ev && ev.filename ? String(ev.filename) : '';
+          const line = ev && ev.lineno ? String(ev.lineno) : '';
+          const col = ev && ev.colno ? String(ev.colno) : '';
+          showFallback('UI script hata verdi.', [src, line && col ? (line + ':' + col) : line].filter(Boolean).join(' '));
+        });
+
+        window.addEventListener('unhandledrejection', function (ev) {
+          const reason = ev && ev.reason ? String(ev.reason) : 'Promise rejection.';
+          showFallback('UI promise hata verdi.', reason);
+        });
+
+        function loadScript(src, opts) {
+          return new Promise(function (resolve, reject) {
+            const s = document.createElement('script');
+            s.src = src;
+            if (opts && opts.crossorigin) s.crossOrigin = 'anonymous';
+            s.onload = function () { resolve(); };
+            s.onerror = function () { reject(new Error('Yüklenemedi: ' + src)); };
+            document.head.appendChild(s);
+          });
+        }
+
+        async function boot() {
+          try {
+            await loadScript('https://unpkg.com/react@18/umd/react.production.min.js', { crossorigin: true });
+            await loadScript('https://unpkg.com/react-dom@18/umd/react-dom.production.min.js', { crossorigin: true });
+
+            if (!window.React || !window.ReactDOM) {
+              throw new Error('React globals bulunamadı (React/ReactDOM).');
+            }
+
+            await loadScript('./app.js');
+
+            // Eğer app.js render'a hiç ulaşamadıysa (ör: runtime error), fallback tetikle.
+            setTimeout(function () {
+              if (!window.__TRITONX_APP_STARTED) {
+                showFallback('UI başlatılamadı.', 'app.js çalıştı ama render tamamlanmadı.');
+              }
+            }, 800);
+          } catch (e) {
+            showFallback('UI yüklenemedi.', e && e.message ? String(e.message) : String(e));
+          }
+        }
+
+        boot();
+      })();
+    </script>
+  </body>
+</html>
